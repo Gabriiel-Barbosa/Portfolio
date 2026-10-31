@@ -1,0 +1,18 @@
+# Só o portfólio vai para o repositório. Todo o resto é bloqueado por padrão.
+/*
+!/.gitignore
+!/README.md
+!/docs/
+
+# Insumos nunca entram, nem dentro de docs/
+.claude/
+CLAUDE.md
+ROADMAP.md
+AGENTS.md
+Profile.pdf
+planejamento/
+.env*
+*.pbix
+*.pbit
+*.xlsx
+*.docx
