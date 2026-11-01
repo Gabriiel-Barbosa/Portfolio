@@ -1,5 +1,3 @@
-const semMovimento = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 function criar(tag, classe, texto) {
   const el = document.createElement(tag);
   if (classe) el.className = classe;
@@ -7,42 +5,17 @@ function criar(tag, classe, texto) {
   return el;
 }
 
-// Troca de tema com a nova cor abrindo em círculo a partir do botão.
-const botaoTema = document.getElementById("tema");
-function aplicarTema() {
-  const novo = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = novo;
-  try { localStorage.setItem("tema", novo === "dark" ? "escuro" : "claro"); } catch (e) {}
-}
-botaoTema.addEventListener("click", () => {
-  if (semMovimento || !document.startViewTransition) { aplicarTema(); return; }
-  const r = botaoTema.getBoundingClientRect();
-  const x = r.left + r.width / 2, y = r.top + r.height / 2;
-  const raio = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-  document.startViewTransition(aplicarTema).ready.then(() => {
-    document.documentElement.animate(
-      { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${raio}px at ${x}px ${y}px)`] },
-      { duration: 520, easing: "cubic-bezier(.23, 1, .32, 1)", pseudoElement: "::view-transition-new(root)" }
-    );
-  });
-});
-
-// O menu só ganha fundo depois que a página rola.
-const barraTopo = document.querySelector(".barra");
-const marcarRolagem = () => barraTopo.classList.toggle("rolou", scrollY > 8);
-addEventListener("scroll", marcarRolagem, { passive: true });
-marcarRolagem();
-
-// A linha de "Como trabalho" acompanha a rolagem.
-const fluxo = document.getElementById("fluxo");
-function atualizarFluxo() {
-  const r = fluxo.getBoundingClientRect();
-  const p = (innerHeight * .9 - r.top) / (innerHeight * .6);
-  fluxo.style.setProperty("--progresso", Math.min(1, Math.max(.08, p)).toFixed(3));
-}
+// Repete cada lista da esteira para o movimento não ter emenda. O CSS desloca uma cópia por volta.
 if (!semMovimento) {
-  addEventListener("scroll", atualizarFluxo, { passive: true });
-  atualizarFluxo();
+  document.querySelectorAll(".esteira-trilho").forEach(trilho => {
+    const lista = trilho.querySelector(".esteira-lista");
+    for (let i = 0; i < 3; i++) {
+      const copia = lista.cloneNode(true);
+      copia.removeAttribute("aria-label");
+      copia.setAttribute("aria-hidden", "true");
+      trilho.append(copia);
+    }
+  });
 }
 
 // Janela de detalhes, usada pelos trabalhos e pelas formações.
